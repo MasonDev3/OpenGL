@@ -14,8 +14,8 @@
 #include "materials.h"
 
 #define ATTENUATION_CONSTANT    1.0f
-#define ATTENUATION_LINEAR      0.09f
-#define ATTENUATION_QUADRATIC   0.032f
+#define ATTENUATION_LINEAR      0.14f
+#define ATTENUATION_QUADRATIC   0.07f
 
 void mouse_callback(GLFWwindow*, double, double);
 void scroll_callback(GLFWwindow*, double, double);
@@ -149,6 +149,13 @@ int main()
         glm::vec3(0.0f, 0.0f, -3.0f)
     };
 
+    glm::vec3 horrorLightColors[] = {
+        glm::vec3(0.1f, 0.1f, 0.1f),
+        glm::vec3(0.1f, 0.1f, 0.1f),
+        glm::vec3(0.1f, 0.1f, 0.1f),
+        glm::vec3(0.3f, 0.1f, 0.1f)
+    };
+
 
     //-------------------------------
     // Set up VBO, VAO, and
@@ -208,7 +215,7 @@ int main()
         processInput(window);
 
         // rendering commands
-        glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         // Wireframe?
@@ -217,10 +224,12 @@ int main()
             glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
         }
 
-        float lightX = sin(glfwGetTime());
+        // The below used for a rotating light around an object
+        //------------------------------------------------------
+        /*float lightX = sin(glfwGetTime());
         float lightY = sin(glfwGetTime()) - cos(glfwGetTime());
         float lightZ = cos(glfwGetTime());
-        glm::vec3 lightPos(1.2f, 1.0f, 2.0f);
+        glm::vec3 lightPos(1.2f, 1.0f, 2.0f);*/
 
         // Draw cube object 
         cubeShader.use();
@@ -237,63 +246,64 @@ int main()
         // Kl = attenuation linear variable
         // Kq = attenuation quadratic variable
 
+        // Point Light attributes
         glm::vec3 pointAmbient = glm::vec3(0.05f, 0.05f, 0.05f);
         glm::vec3 pointDiffuse = glm::vec3(0.8f, 0.8f, 0.8f);
         glm::vec3 pointSpecular = glm::vec3(1.0f, 1.0f, 1.0f);
 
         // Directional Light Shader
         cubeShader.setVec3("dirLight.direction", -0.2f, -1.0f, -0.3f);
-        cubeShader.setVec3("dirLight.ambient", 0.05f, 0.05f, 0.05f);
-        cubeShader.setVec3("dirLight.diffuse", 0.4f, 0.4f, 0.4f);
-        cubeShader.setVec3("dirLight.specular", 0.5f, 0.5f, 0.5f);
+        cubeShader.setVec3("dirLight.ambient", 0.0f, 0.0f, 0.0f);
+        cubeShader.setVec3("dirLight.diffuse", 0.05f, 0.05f, 0.05f);
+        cubeShader.setVec3("dirLight.specular", 0.2f, 0.2f, 0.2f);
 
         // Point Light 1 Shader
         cubeShader.setVec3("pointLight[0].position", pointLightPositions[0]);
-        cubeShader.setVec3("pointLight[0].ambient", pointAmbient);
-        cubeShader.setVec3("pointLight[0].diffuse", pointDiffuse);
-        cubeShader.setVec3("pointLight[0].specular", pointSpecular);
+        cubeShader.setVec3("pointLight[0].ambient", horrorLightColors[0] * 0.1f);
+        cubeShader.setVec3("pointLight[0].diffuse", horrorLightColors[0]);
+        cubeShader.setVec3("pointLight[0].specular", horrorLightColors[0]);
         cubeShader.setFloat("pointLight[0].Kc", ATTENUATION_CONSTANT);
         cubeShader.setFloat("pointLight[0].Kl", ATTENUATION_LINEAR);
         cubeShader.setFloat("pointLight[0].Kq", ATTENUATION_QUADRATIC);
 
         // Point Light 2 Shader
         cubeShader.setVec3("pointLight[1].position", pointLightPositions[1]);
-        cubeShader.setVec3("pointLight[1].ambient", pointAmbient);
-        cubeShader.setVec3("pointLight[1].diffuse", pointDiffuse);
-        cubeShader.setVec3("pointLight[1].specular", pointSpecular);
+        cubeShader.setVec3("pointLight[1].ambient", horrorLightColors[1] * 0.1f);
+        cubeShader.setVec3("pointLight[1].diffuse", horrorLightColors[1]);
+        cubeShader.setVec3("pointLight[1].specular", horrorLightColors[1]);
         cubeShader.setFloat("pointLight[1].Kc", ATTENUATION_CONSTANT);
         cubeShader.setFloat("pointLight[1].Kl", ATTENUATION_LINEAR);
         cubeShader.setFloat("pointLight[1].Kq", ATTENUATION_QUADRATIC);
 
         // Point Light 3 Shader
         cubeShader.setVec3("pointLight[2].position", pointLightPositions[2]);
-        cubeShader.setVec3("pointLight[2].ambient", pointAmbient);
-        cubeShader.setVec3("pointLight[2].diffuse", pointDiffuse);
-        cubeShader.setVec3("pointLight[2].specular", pointSpecular);
+        cubeShader.setVec3("pointLight[2].ambient", horrorLightColors[2] * 0.1f);
+        cubeShader.setVec3("pointLight[2].diffuse", horrorLightColors[2]);
+        cubeShader.setVec3("pointLight[2].specular", horrorLightColors[2]);
         cubeShader.setFloat("pointLight[2].Kc", ATTENUATION_CONSTANT);
         cubeShader.setFloat("pointLight[2].Kl", ATTENUATION_LINEAR);
         cubeShader.setFloat("pointLight[2].Kq", ATTENUATION_QUADRATIC);
-
+        
         // Point Light 4 Shader
         cubeShader.setVec3("pointLight[3].position", pointLightPositions[3]);
-        cubeShader.setVec3("pointLight[3].ambient", pointAmbient);
-        cubeShader.setVec3("pointLight[3].diffuse", pointDiffuse);
-        cubeShader.setVec3("pointLight[3].specular", pointSpecular);
+        cubeShader.setVec3("pointLight[3].ambient", horrorLightColors[3] * 0.1f);
+        cubeShader.setVec3("pointLight[3].diffuse", horrorLightColors[3]);
+        cubeShader.setVec3("pointLight[3].specular", horrorLightColors[3]);
         cubeShader.setFloat("pointLight[3].Kc", ATTENUATION_CONSTANT);
         cubeShader.setFloat("pointLight[3].Kl", ATTENUATION_LINEAR);
         cubeShader.setFloat("pointLight[3].Kq", ATTENUATION_QUADRATIC);
 
         // Spotlight Shader
-        cubeShader.setVec3("spotLight.position", camera.Position);
-        cubeShader.setVec3("spotLight.direction", camera.Front);
-        cubeShader.setVec3("spotLight.ambient", 0.0f, 0.0f, 0.0f);
-        cubeShader.setVec3("spotLight.diffuse", 1.0f, 1.0f, 1.0f);
-        cubeShader.setVec3("spotLight.specular", 1.0f, 1.0f, 1.0f);
-        cubeShader.setFloat("spotLight.Kc", ATTENUATION_CONSTANT);
-        cubeShader.setFloat("spotLight.Kl", ATTENUATION_LINEAR);
-        cubeShader.setFloat("spotLight.Kq", ATTENUATION_QUADRATIC);
-        cubeShader.setFloat("spotLight.cutOff", glm::cos(glm::radians(12.5f)));
-        cubeShader.setFloat("spotLight.outCutOff", glm::cos(glm::radians(15.0f)));
+        cubeShader.setVec3("flashLight.position", camera.Position);
+        cubeShader.setVec3("flashLight.direction", camera.Front);
+        cubeShader.setVec3("flashLight.ambient", 0.0f, 0.0f, 0.0f);
+        cubeShader.setVec3("flashLight.diffuse", 0.8f, 0.8f, 0.8f);
+        cubeShader.setVec3("flashLight.specular", 1.0f, 1.0f, 1.0f);
+        cubeShader.setFloat("flashLight.Kc", ATTENUATION_CONSTANT);
+        cubeShader.setFloat("flashLight.Kl", 0.09f);
+        cubeShader.setFloat("flashLight.Kq", 0.032f);
+        cubeShader.setFloat("flashLight.cutOff", glm::cos(glm::radians(10.0f)));
+        cubeShader.setFloat("flashLight.outCutOff", glm::cos(glm::radians(15.0f)));
 
         // view/projection transformations
         glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
@@ -319,8 +329,8 @@ int main()
         {
             glm::mat4 model = glm::mat4(1.0f);
             model = glm::translate(model, cubePositions[i]);
-            //float angle = 20 * i;
-            //model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
+            float angle = 20 * i;
+            model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
             cubeShader.setMat4("model", model);
             
             glDrawArrays(GL_TRIANGLES, 0, 36);
