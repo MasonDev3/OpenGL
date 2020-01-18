@@ -1,0 +1,13 @@
+﻿  main.cpp
+C:\Users\mason\source\repos\LearnOpenGL\LearnOpenGL\main.cpp(203,28): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+C:\Users\mason\source\repos\LearnOpenGL\LearnOpenGL\main.cpp(220,22): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+C:\Users\mason\source\repos\LearnOpenGL\LearnOpenGL\main.cpp(221,22): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+C:\Users\mason\source\repos\LearnOpenGL\LearnOpenGL\main.cpp(222,22): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+C:\Users\mason\source\repos\LearnOpenGL\LearnOpenGL\main.cpp(366,17): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+C:\Users\mason\source\repos\LearnOpenGL\LearnOpenGL\main.cpp(367,17): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+C:\Users\mason\source\repos\LearnOpenGL\LearnOpenGL\main.cpp(371,19): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+C:\Users\mason\source\repos\LearnOpenGL\LearnOpenGL\main.cpp(372,19): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+C:\Users\mason\source\repos\LearnOpenGL\LearnOpenGL\main.cpp(373,13): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+C:\Users\mason\source\repos\LearnOpenGL\LearnOpenGL\main.cpp(374,13): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+C:\Users\mason\source\repos\LearnOpenGL\LearnOpenGL\main.cpp(381,31): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+  LearnOpenGL.vcxproj -> C:\Users\mason\source\repos\LearnOpenGL\x64\Debug\LearnOpenGL.exe
