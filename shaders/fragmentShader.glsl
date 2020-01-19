@@ -41,12 +41,14 @@ struct SpotLight {
 
 #define NR_POINT_LIGHTS 4
 
+out vec4 ModelFragColor;
 out vec4 FragColor;
 in vec2 TexCoords;
 in vec3 Normal;
 in vec3 FragPos;
 
 uniform vec3 viewPos;
+uniform sampler2D texture_diffuse1;
 uniform Material material;
 uniform SpotLight flashLight;
 uniform DirLight dirLight;
@@ -78,6 +80,7 @@ void main()
     result += CalcSpotLight(flashLight, norm, FragPos, viewDir);
     
     FragColor = vec4(result, 1.0);
+    ModelFragColor = texture(texture_diffuse1, TexCoords);
     
 }
 
@@ -147,7 +150,7 @@ vec3 CalcSpotLight(SpotLight light, vec3 normal, vec3 fragPos, vec3 viewDir)
     vec3 ambient = light.ambient * vec3(texture(material.diffuse, TexCoords));
     vec3 diffuse = light.diffuse * diff * vec3(texture(material.diffuse, TexCoords));
     vec3 specular = light.specular * spec * vec3(texture(material.specular, TexCoords));
-    ambient *= attenuation * intensity;
+    ambient *= attenuation;
     diffuse *= attenuation * intensity;
     specular *= attenuation * intensity;
 

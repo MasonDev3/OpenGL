@@ -9,9 +9,8 @@
 #include <cmath>
 
 #include "shader.h"
-#include "stb_image.h"
 #include "camera.h"
-#include "materials.h"
+#include "model.h"
 
 #define ATTENUATION_CONSTANT    1.0f
 #define ATTENUATION_LINEAR      0.14f
@@ -66,6 +65,9 @@ int main()
     glfwSetCursorPosCallback(window, mouse_callback);
     glfwSetScrollCallback(window, scroll_callback);
 
+    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+
+
     // glad: Load all OpenGL function pointers
     //-------------------------------------------
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
@@ -76,131 +78,12 @@ int main()
 
     glEnable(GL_DEPTH_TEST);
 
-    Shader cubeShader("shaders/vertexShader.glsl", "shaders/fragmentShader.glsl");
-    Shader lampShader("shaders/lampVertexShader.glsl", "shaders/lampFragmentShader.glsl");
-    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    // load shaders
+    Shader shader("shaders/modelVertexShader.glsl", "shaders/modelFragShader.glsl");
+    //Shader lampShader("shaders/lampVertexShader.glsl", "shaders/lampFragmentShader.glsl");
 
-
-
-
-    float vertices[] = {
-        // positions          // normals           // texture coords
-        -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f, 0.0f,
-         0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  1.0f, 0.0f,
-         0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  1.0f, 1.0f,
-         0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  1.0f, 1.0f,
-        -0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f, 1.0f,
-        -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f, 0.0f,
-
-        -0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,   0.0f, 0.0f,
-         0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,   1.0f, 0.0f,
-         0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,   1.0f, 1.0f,
-         0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,   1.0f, 1.0f,
-        -0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,   0.0f, 1.0f,
-        -0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,   0.0f, 0.0f,
-
-        -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  1.0f, 0.0f,
-        -0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  1.0f, 1.0f,
-        -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  0.0f, 1.0f,
-        -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  0.0f, 1.0f,
-        -0.5f, -0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  0.0f, 0.0f,
-        -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  1.0f, 0.0f,
-
-         0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  1.0f, 0.0f,
-         0.5f,  0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  1.0f, 1.0f,
-         0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  0.0f, 1.0f,
-         0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  0.0f, 1.0f,
-         0.5f, -0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  0.0f, 0.0f,
-         0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  1.0f, 0.0f,
-
-        -0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,  0.0f, 1.0f,
-         0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,  1.0f, 1.0f,
-         0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,  1.0f, 0.0f,
-         0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,  1.0f, 0.0f,
-        -0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,  0.0f, 0.0f,
-        -0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,  0.0f, 1.0f,
-
-        -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  0.0f, 1.0f,
-         0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  1.0f, 1.0f,
-         0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  1.0f, 0.0f,
-         0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  1.0f, 0.0f,
-        -0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  0.0f, 0.0f,
-        -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  0.0f, 1.0f
-    };
-
-    // world space positions of our cubes
-    glm::vec3 cubePositions[] = {
-        glm::vec3(0.0f,  0.0f,  0.0f),
-        glm::vec3(2.0f,  5.0f, -15.0f),
-        glm::vec3(-1.5f, -2.2f, -2.5f),
-        glm::vec3(-3.8f, -2.0f, -12.3f),
-        glm::vec3(2.4f, -0.4f, -3.5f),
-        glm::vec3(-1.7f,  3.0f, -7.5f),
-        glm::vec3(1.3f, -2.0f, -2.5f),
-        glm::vec3(1.5f,  2.0f, -2.5f),
-        glm::vec3(1.5f,  0.2f, -1.5f),
-        glm::vec3(-1.3f,  1.0f, -1.5f)
-    };
-
-    glm::vec3 pointLightPositions[] = {
-        glm::vec3(0.7f, 0.2f, 2.0f),
-        glm::vec3(2.3f, -3.3f, -4.0f),
-        glm::vec3(-4.0f, 2.0f, -12.0f),
-        glm::vec3(0.0f, 0.0f, -3.0f)
-    };
-
-    glm::vec3 horrorLightColors[] = {
-        glm::vec3(0.1f, 0.1f, 0.1f),
-        glm::vec3(0.1f, 0.1f, 0.1f),
-        glm::vec3(0.1f, 0.1f, 0.1f),
-        glm::vec3(0.3f, 0.1f, 0.1f)
-    };
-
-
-    //-------------------------------
-    // Set up VBO, VAO, and
-    // pointers to data
-    //-------------------------------
-
-    // Create vertex buffer object (VBO) to send data from CPU to GPU
-    // and keep it there for faster performance
-    unsigned int VBO, cubeVAO;
-    glGenVertexArrays(1, &cubeVAO);
-    glGenBuffers(1, &VBO);
-
-    // Bind VBO buffer to GL_ARRAY_BUFFER
-    // Copy previously defined vertex data into buffer's memory
-    // glBufferData(target_buffer, size_of_data, data, usage)
-    // usage is GL_STATIC_DRAW, GL_DYNAMIC_DRAW, GL_STREAM_DRAW
-    // Tell OpenGL how to interpret vertex data
-    // VAOs[0]
-
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-    glBindVertexArray(cubeVAO);
-    //position attribute
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
-    glEnableVertexAttribArray(1);
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
-    glEnableVertexAttribArray(2);
-
-    unsigned int lightVAO;
-    glGenVertexArrays(1, &lightVAO);
-    glBindVertexArray(lightVAO);
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(0);
-
-    // Load Textures
-    //---------------------------
-    unsigned int diffuseMap = loadTexture("textures/container2.png");
-    unsigned int specularMap = loadTexture("textures/container2_specular.png");
-    cubeShader.use();
-    cubeShader.setInt("material.diffuse", 0);
-    cubeShader.setInt("material.specular", 1);
+    // load models
+    Model ourModel("models/nanosuit/nanosuit.obj");
 
     //------------------------------------------------
     // GLFW: Render loop (displays individual FRAMES)
@@ -215,7 +98,7 @@ int main()
         processInput(window);
 
         // rendering commands
-        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+        glClearColor(0.21f, 0.18f, 0.14f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         // Wireframe?
@@ -229,129 +112,23 @@ int main()
         /*float lightX = sin(glfwGetTime());
         float lightY = sin(glfwGetTime()) - cos(glfwGetTime());
         float lightZ = cos(glfwGetTime());
-        glm::vec3 lightPos(1.2f, 1.0f, 2.0f);*/
+        glm::vec3 lightPos(lightX, lightY, lightZ);*/
 
-        // Draw cube object 
-        cubeShader.use();
-        cubeShader.setVec3("viewPos", camera.Position);
-        cubeShader.setFloat("material.shininess", 32.0f);
-
-        /* Set all uniform attributes for the 6 different lights. This all has to be
-         * done manually unless we define light types as different classes and set
-         * all their attributes that way. Another way could be to us 
-         * 'Uniform buffor objects'
-         */
-
-        // Kc = attenuation constant variable
-        // Kl = attenuation linear variable
-        // Kq = attenuation quadratic variable
-
-        // Point Light attributes
-        glm::vec3 pointAmbient = glm::vec3(0.05f, 0.05f, 0.05f);
-        glm::vec3 pointDiffuse = glm::vec3(0.8f, 0.8f, 0.8f);
-        glm::vec3 pointSpecular = glm::vec3(1.0f, 1.0f, 1.0f);
-
-        // Directional Light Shader
-        cubeShader.setVec3("dirLight.direction", -0.2f, -1.0f, -0.3f);
-        cubeShader.setVec3("dirLight.ambient", 0.0f, 0.0f, 0.0f);
-        cubeShader.setVec3("dirLight.diffuse", 0.05f, 0.05f, 0.05f);
-        cubeShader.setVec3("dirLight.specular", 0.2f, 0.2f, 0.2f);
-
-        // Point Light 1 Shader
-        cubeShader.setVec3("pointLight[0].position", pointLightPositions[0]);
-        cubeShader.setVec3("pointLight[0].ambient", horrorLightColors[0] * 0.1f);
-        cubeShader.setVec3("pointLight[0].diffuse", horrorLightColors[0]);
-        cubeShader.setVec3("pointLight[0].specular", horrorLightColors[0]);
-        cubeShader.setFloat("pointLight[0].Kc", ATTENUATION_CONSTANT);
-        cubeShader.setFloat("pointLight[0].Kl", ATTENUATION_LINEAR);
-        cubeShader.setFloat("pointLight[0].Kq", ATTENUATION_QUADRATIC);
-
-        // Point Light 2 Shader
-        cubeShader.setVec3("pointLight[1].position", pointLightPositions[1]);
-        cubeShader.setVec3("pointLight[1].ambient", horrorLightColors[1] * 0.1f);
-        cubeShader.setVec3("pointLight[1].diffuse", horrorLightColors[1]);
-        cubeShader.setVec3("pointLight[1].specular", horrorLightColors[1]);
-        cubeShader.setFloat("pointLight[1].Kc", ATTENUATION_CONSTANT);
-        cubeShader.setFloat("pointLight[1].Kl", ATTENUATION_LINEAR);
-        cubeShader.setFloat("pointLight[1].Kq", ATTENUATION_QUADRATIC);
-
-        // Point Light 3 Shader
-        cubeShader.setVec3("pointLight[2].position", pointLightPositions[2]);
-        cubeShader.setVec3("pointLight[2].ambient", horrorLightColors[2] * 0.1f);
-        cubeShader.setVec3("pointLight[2].diffuse", horrorLightColors[2]);
-        cubeShader.setVec3("pointLight[2].specular", horrorLightColors[2]);
-        cubeShader.setFloat("pointLight[2].Kc", ATTENUATION_CONSTANT);
-        cubeShader.setFloat("pointLight[2].Kl", ATTENUATION_LINEAR);
-        cubeShader.setFloat("pointLight[2].Kq", ATTENUATION_QUADRATIC);
-        
-        // Point Light 4 Shader
-        cubeShader.setVec3("pointLight[3].position", pointLightPositions[3]);
-        cubeShader.setVec3("pointLight[3].ambient", horrorLightColors[3] * 0.1f);
-        cubeShader.setVec3("pointLight[3].diffuse", horrorLightColors[3]);
-        cubeShader.setVec3("pointLight[3].specular", horrorLightColors[3]);
-        cubeShader.setFloat("pointLight[3].Kc", ATTENUATION_CONSTANT);
-        cubeShader.setFloat("pointLight[3].Kl", ATTENUATION_LINEAR);
-        cubeShader.setFloat("pointLight[3].Kq", ATTENUATION_QUADRATIC);
-
-        // Spotlight Shader
-        cubeShader.setVec3("flashLight.position", camera.Position);
-        cubeShader.setVec3("flashLight.direction", camera.Front);
-        cubeShader.setVec3("flashLight.ambient", 0.0f, 0.0f, 0.0f);
-        cubeShader.setVec3("flashLight.diffuse", 0.8f, 0.8f, 0.8f);
-        cubeShader.setVec3("flashLight.specular", 1.0f, 1.0f, 1.0f);
-        cubeShader.setFloat("flashLight.Kc", ATTENUATION_CONSTANT);
-        cubeShader.setFloat("flashLight.Kl", 0.09f);
-        cubeShader.setFloat("flashLight.Kq", 0.032f);
-        cubeShader.setFloat("flashLight.cutOff", glm::cos(glm::radians(10.0f)));
-        cubeShader.setFloat("flashLight.outCutOff", glm::cos(glm::radians(15.0f)));
+        // Draw model 
+        shader.use();
 
         // view/projection transformations
         glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
         glm::mat4 view = camera.GetViewMatrix();
-        cubeShader.setMat4("projection", projection);
-        cubeShader.setMat4("view", view);
+        shader.setMat4("projection", projection);
+        shader.setMat4("view", view);
 
         // world transformation
         glm::mat4 model = glm::mat4(1.0f);
-        cubeShader.setMat4("model", model);
-
-        // bind diffuse map
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, diffuseMap);
-        // bind specular map
-        glActiveTexture(GL_TEXTURE1);
-        glBindTexture(GL_TEXTURE_2D, specularMap);
-        
-        
-        // render containers
-        glBindVertexArray(cubeVAO);
-        for (unsigned int i = 0; i < 10; i++)
-        {
-            glm::mat4 model = glm::mat4(1.0f);
-            model = glm::translate(model, cubePositions[i]);
-            float angle = 20 * i;
-            model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
-            cubeShader.setMat4("model", model);
-            
-            glDrawArrays(GL_TRIANGLES, 0, 36);
-        }
-
-        // Draw lamp object(s)
-        lampShader.use();
-        lampShader.setMat4("projection", projection);
-        lampShader.setMat4("view", view);
-
-        // draw as many light bulbs as we have point lights
-        glBindVertexArray(lightVAO);
-        for (unsigned int i = 0; i < 4; i++)
-        {
-            model = glm::mat4(1.0f);
-            model = glm::translate(model, pointLightPositions[i]);
-            model = glm::scale(model, glm::vec3(0.2f));
-            lampShader.setMat4("model", model);
-            glDrawArrays(GL_TRIANGLES, 0, 36);
-        }
-
+        model = glm::translate(model, glm::vec3(0.0f, -1.75f, 0.0f)); // translate it down so it's at the center of the scene
+        model = glm::scale(model, glm::vec3(0.2f, 0.2f, 0.2f)); // it's a bit too big so scale the model down
+        shader.setMat4("model", model);
+        ourModel.Draw(shader);
 
 
 
@@ -359,10 +136,6 @@ int main()
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
-
-    glDeleteVertexArrays(1, &cubeVAO);
-    glDeleteVertexArrays(1, &lightVAO);
-    glDeleteBuffers(1, &VBO);
 
     // terminate glfw and clean up memory allocations
     glfwTerminate();
@@ -435,12 +208,17 @@ void processInput(GLFWwindow* window)
     }
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
     {
-        camera.ProcessKeyboard(FORWARD, deltaTime);
+        if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
+        {
+            camera.ProcessKeyboard(RUNNING, deltaTime);
+        }
+        else
+            camera.ProcessKeyboard(FORWARD, deltaTime);
     }
-    if ((glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) && glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
+    /*if ((glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) && glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
     {
         camera.ProcessKeyboard(RUNNING, deltaTime);
-    }
+    }*/
     if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
     {
         camera.ProcessKeyboard(BACKWARD, deltaTime);
